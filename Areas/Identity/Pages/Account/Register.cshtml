@@ -1,0 +1,117 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label class="form-label d-block fw-bold">I am registering as:</label>
+                <div class="form-check form-check-inline">
+                    <input type="radio" asp-for="Input.RoleName" value="Client" class="form-check-input" checked />
+                    <label asp-for="Input.RoleName" class="form-check-label">Client</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" asp-for="Input.RoleName" value="Prestataire" class="form-check-input" />
+                    <label asp-for="Input.RoleName" class="form-check-label">Prestataire</label>
+                </div>
+                <span asp-validation-for="Input.RoleName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FirstName" class="form-control" aria-required="true" placeholder="First Name" />
+                <label asp-for="Input.FirstName">First Name</label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" aria-required="true" placeholder="Last Name" />
+                <label asp-for="Input.LastName">Last Name</label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Telephone" class="form-control" aria-required="true" placeholder="Phone" />
+                <label asp-for="Input.Telephone">Phone Number</label>
+                <span asp-validation-for="Input.Telephone" class="text-danger"></span>
+            </div>
+
+            <div id="prestataire-fields" style="display: none;">
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Specialite" class="form-control" placeholder="Specialty" />
+                    <label asp-for="Input.Specialite">Specialty</label>
+                    <span asp-validation-for="Input.Specialite" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    // ... (External Login content) ...
+                }
+                else
+                {
+                    // ... (External Login content) ...
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to show/hide the specialty field
+            function togglePrestataireFields() {
+                // Check if the Prestataire radio button is checked
+                if ($('input[name="Input.RoleName"]:checked').val() === 'Prestataire') {
+                    $('#prestataire-fields').slideDown();
+                } else {
+                    $('#prestataire-fields').slideUp();
+                }
+            }
+
+            // Bind the change event to the radio buttons
+            $('input[type=radio][name="Input.RoleName"]').change(function() {
+                togglePrestataireFields();
+            });
+
+            // Set the initial state on page load
+            togglePrestataireFields();
+        });
+    </script>
+}

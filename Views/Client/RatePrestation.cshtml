@@ -1,0 +1,165 @@
+@model GestionPrestation.Models.Prestation
+@{
+    ViewData["Title"] = "Rate Your Experience";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-5 bg-light-subtle" style="min-height: 100vh;">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <div class="text-center mb-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-check-all display-4"></i>
+                </div>
+                <h1 class="fw-bold text-dark">How was it?</h1>
+                <p class="text-muted px-lg-5">Your feedback helps us maintain high quality and supports our professionals. Please rate your experience with <strong>@Model.Service?.Nom</strong>.</p>
+            </div>
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex align-items-center p-3 bg-light rounded-3 mb-5">
+                        <div class="flex-shrink-0 me-3">
+                            <i class="bi bi-info-circle-fill text-primary fs-4"></i>
+                        </div>
+                        <div class="small">
+                            <span class="d-block fw-bold">Service #@Model.Id</span>
+                            <span class="text-muted">Completed by @(Model.Prestataire?.Nom ?? "Professional") on @(Model.DateFin?.ToString("dd MMM yyyy") ?? "recently")</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="RatePrestation" method="post" id="ratingForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="rating" id="selectedRating" value="0" required />
+
+                        <div class="text-center mb-5">
+                            <label class="form-label fw-bold d-block mb-3 text-uppercase tracking-wider small opacity-75">Your Rating</label>
+                            <div class="rating-stars d-flex justify-content-center gap-3">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi bi-star cursor-pointer star-item display-3" data-value="@i"></i>
+                                }
+                            </div>
+                            <div id="ratingText" class="mt-3 fw-bold text-primary" style="height: 24px;"></div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold mb-2">Detailed Feedback (Optional)</label>
+                            <textarea name="feedback" class="form-control border-2 bg-light bg-opacity-50 rounded-4 p-4"
+                                      rows="4" placeholder="What did you like? Anything we could improve?"></textarea>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
+                                Submit Review
+                            </button>
+                            <a asp-action="MyPrestations" class="btn btn-link text-muted text-decoration-none">
+                                I'll do this later
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.1em;
+    }
+
+    .star-item {
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        color: #e2e8f0;
+    }
+
+        .star-item:hover {
+            transform: scale(1.2);
+        }
+
+        .star-item.active, .star-item.hovered {
+            color: #ffc107;
+        }
+
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #0d6efd;
+        box-shadow: none;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        const stars = document.querySelectorAll('.star-item');
+        const ratingInput = document.getElementById('selectedRating');
+        const ratingText = document.getElementById('ratingText');
+        const labels = ["", "Poor", "Fair", "Good", "Very Good", "Excellent!"];
+
+        stars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', function() {
+                const val = this.dataset.value;
+                highlightStars(val, 'hovered');
+            });
+
+            star.addEventListener('mouseout', function() {
+                removeHighlight('hovered');
+            });
+
+            // Click effect
+            star.addEventListener('click', function() {
+                const val = this.dataset.value;
+                ratingInput.value = val;
+                highlightStars(val, 'active');
+                ratingText.innerText = labels[val];
+
+                // Add a small "pop" animation
+                this.style.transform = "scale(1.4)";
+                setTimeout(() => this.style.transform = "scale(1.2)", 150);
+            });
+        });
+
+        function highlightStars(count, className) {
+            stars.forEach(s => {
+                if (s.dataset.value <= count) {
+                    s.classList.add(className);
+                    if(className === 'active' || className === 'hovered') {
+                        s.classList.replace('bi-star', 'bi-star-fill');
+                    }
+                } else {
+                    if(className === 'active') {
+                        s.classList.remove('active');
+                        s.classList.replace('bi-star-fill', 'bi-star');
+                    }
+                }
+            });
+        }
+
+        function removeHighlight(className) {
+            stars.forEach(s => {
+                s.classList.remove(className);
+                if (!s.classList.contains('active')) {
+                    s.classList.replace('bi-star-fill', 'bi-star');
+                }
+            });
+        }
+
+        // Form validation
+        document.getElementById('ratingForm').onsubmit = function(e) {
+            if (ratingInput.value === "0") {
+                e.preventDefault();
+                alert("Please select a star rating before submitting.");
+            }
+        };
+    </script>
+}

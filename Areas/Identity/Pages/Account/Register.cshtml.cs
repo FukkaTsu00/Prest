@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-// 🎯 ADD DB CONTEXT USING STATEMENT 🎯
 using GestionPrestation.Data;
 
 namespace GestionPrestation.Areas.Identity.Pages.Account
@@ -33,7 +32,6 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        // 🎯 ADD DATABASE CONTEXT FIELD 🎯
         private readonly ApplicationDbContext _context;
 
         public RegisterModel(
@@ -42,7 +40,6 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            // 🎯 INJECT CONTEXT 🎯
             ApplicationDbContext context)
         {
             _userManager = userManager;
@@ -51,11 +48,11 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context; // Assign context
+            _context = context;
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = new InputModel();
 
         public string ReturnUrl { get; set; }
 
@@ -66,12 +63,12 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
             [Required]
             [StringLength(100)]
             [Display(Name = "First Name")]
-            public string FirstName { get; set; } // New Field
+            public string FirstName { get; set; }
 
             [Required]
             [StringLength(100)]
             [Display(Name = "Last Name")]
-            public string LastName { get; set; } // New Field
+            public string LastName { get; set; }
 
             [Required]
             [EmailAddress]
@@ -80,16 +77,28 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Account Type")]
-            public string RoleName { get; set; } // New Field: "Client" or "Prestataire"
+            public string RoleName { get; set; } = "Client";
 
             [Required]
             [StringLength(20)]
             [Display(Name = "Phone Number")]
-            public string Telephone { get; set; } // New Field
+            public string Telephone { get; set; }
 
             [StringLength(100)]
             [Display(Name = "Specialty")]
-            public string? Specialite { get; set; } // New Field (Prestataire-specific)
+            public string Specialite { get; set; }
+
+            [StringLength(100)]
+            [Display(Name = "Company Name")]
+            public string CompanyName { get; set; }
+
+            [StringLength(255)]
+            [Display(Name = "Company Address")]
+            public string CompanyAddress { get; set; }
+
+            [StringLength(50)]
+            [Display(Name = "Company Registration Number")]
+            public string CompanyRegistrationNumber { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -104,10 +113,15 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task OnGetAsync(string returnUrl = null, string role = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                Input.RoleName = role;
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -116,13 +130,11 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                // 1. Create the ApplicationUser (Identity record)
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                // Set custom identity fields
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
@@ -132,36 +144,41 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // 2. Assign the Identity Role
-                    var role = Input.RoleName;
-                    await _userManager.AddToRoleAsync(user, role);
+                    var role = Input.RoleName ?? "Client";
+                    var addRoleResult = await _userManager.AddToRoleAsync(user, role);
+                    if (!addRoleResult.Succeeded)
+                    {
+                        await _userManager.DeleteAsync(user);
+                        ModelState.AddModelError(string.Empty, "Impossible d'assigner le rôle.");
+                        return Page();
+                    }
 
-                    // 3. Create the corresponding profile (Client or Prestataire)
                     if (role == "Client")
                     {
-                        var client = new Client
+                        var client = new Models.Client
                         {
-                            ApplicationUserId = user.Id, // Link!
-                            Nom = Input.LastName, // Use last name from input
-                            Prenom = Input.FirstName, // Use first name from input
+                            ApplicationUserId = user.Id,
+                            Nom = Input.LastName,
+                            Prenom = Input.FirstName,
                             Telephone = Input.Telephone,
+                            Email = Input.Email,
+                            Adresse = string.Empty,
+                            TypeClient = "Particulier"
                         };
                         _context.Clients.Add(client);
                     }
                     else if (role == "Prestataire")
                     {
-                        // Optional: Basic validation for Prestataire-specific field
                         if (string.IsNullOrWhiteSpace(Input.Specialite))
                         {
-                            // Clean up the user if profile creation fails and redirect to error
                             await _userManager.DeleteAsync(user);
                             ModelState.AddModelError(string.Empty, "Prestataires must specify a specialty.");
                             return Page();
                         }
 
-                        var prestataire = new Prestataire
+                        var prestataire = new Models.Prestataire
                         {
-                            ApplicationUserId = user.Id, // Link!
+                            ApplicationUserId = user.Id,
                             Nom = Input.LastName,
                             Prenom = Input.FirstName,
                             Telephone = Input.Telephone,
@@ -169,11 +186,28 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
                         };
                         _context.Prestataires.Add(prestataire);
                     }
+                    else if (role == "Societe")
+                    {
+                        if (string.IsNullOrWhiteSpace(Input.CompanyName) || string.IsNullOrWhiteSpace(Input.CompanyAddress) || string.IsNullOrWhiteSpace(Input.CompanyRegistrationNumber))
+                        {
+                            await _userManager.DeleteAsync(user);
+                            ModelState.AddModelError(string.Empty, "Company name, address, and registration number are required.");
+                            return Page();
+                        }
 
-                    // 4. Save the profile entity to the database
+                        var societe = new Models.Societe
+                        {
+                            ApplicationUserId = user.Id,
+                            Nom = Input.CompanyName,
+                            Adresse = Input.CompanyAddress,
+                            Email = Input.Email,
+                            NumeroStringCommerce = Input.CompanyRegistrationNumber,
+                        };
+                        _context.Societes.Add(societe);
+                    }
+
                     await _context.SaveChangesAsync();
 
-                    // Email Confirmation Logic (Standard Identity)
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -192,11 +226,25 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // 5. Sign in user directly if email confirmation is not required
                         await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        // We will fix the redirection in the LoginModel next!
-                        return LocalRedirect(returnUrl);
+                        // Redirect to role-specific dashboard after registration
+                        if (role == "Admin")
+                        {
+                            return Redirect("/Admin/Dashboard");
+                        }
+                        else if (role == "Client")
+                        {
+                            return Redirect("/Client/Dashboard");
+                        }
+                        else if (role == "Prestataire")
+                        {
+                            return Redirect("/Prestataire/Dashboard");
+                        }
+                        else if (role == "Societe")
+                        {
+                            return Redirect("/Company/Dashboard");
+                        }
+                        return LocalRedirect(returnUrl ?? Url.Content("~/"));
                     }
                 }
                 foreach (var error in result.Errors)

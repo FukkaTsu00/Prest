@@ -1,0 +1,149 @@
+@model GestionPrestation.Models.Prestataire
+@{
+    ViewData["Title"] = "Professional Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4 bg-light-subtle">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-person-gear me-2 text-primary"></i>My Professional Profile
+            </h1>
+            <p class="text-muted mb-0">Manage your public information and work preferences.</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-white border rounded-pill px-4 shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div>@TempData["Success"]</div>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-4 mb-4">
+                <div class="mx-auto bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person fs-1"></i>
+                </div>
+                <h4 class="fw-bold mb-1">@Model.Prenom @Model.Nom</h4>
+                <p class="text-muted small mb-3">Member since @Model.DateInscription.ToString("MMM yyyy")</p>
+
+                <div class="p-3 @(Model.Disponible ? "bg-success-subtle text-success" : "bg-secondary-subtle text-secondary") rounded-pill fw-bold small">
+                    <i class="bi @(Model.Disponible ? "bi-check-circle-fill" : "bi-pause-circle-fill") me-2"></i>
+                    @(Model.Disponible ? "Active & Accepting Work" : "Currently Unavailable")
+                </div>
+                <hr class="my-4 opacity-50">
+                <div class="text-start">
+                    <label class="small text-muted text-uppercase fw-bold tracking-wider">Current Specialty</label>
+                    <p class="fw-bold text-dark mb-0"><i class="bi bi-briefcase me-2"></i>@Model.Specialite</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">Personal & Financial Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ApplicationUserId" />
+                        <input type="hidden" asp-for="DateInscription" />
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Nom" class="form-label small fw-bold">Last Name</label>
+                                <input asp-for="Nom" class="form-control bg-light border-0 py-2" placeholder="Enter your last name" required />
+                                <span asp-validation-for="Nom" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Prenom" class="form-label small fw-bold">First Name</label>
+                                <input asp-for="Prenom" class="form-control bg-light border-0 py-2" placeholder="Enter your first name" required />
+                                <span asp-validation-for="Prenom" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Telephone" class="form-label small fw-bold">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="Telephone" class="form-control bg-light border-0 py-2" placeholder="+1..." required />
+                                </div>
+                                <span asp-validation-for="Telephone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Specialite" class="form-label small fw-bold">Service Specialty</label>
+                                <input asp-for="Specialite" class="form-control bg-light border-0 py-2" placeholder="e.g. Plumbing, Electrician" required />
+                                <span asp-validation-for="Specialite" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4 align-items-end">
+                            <div class="col-md-6">
+                                <label asp-for="TarifHoraire" class="form-label small fw-bold">Your Hourly Rate</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bold">$</span>
+                                    <input asp-for="TarifHoraire" type="number" step="0.01" class="form-control bg-light border-0 py-2 fw-bold" required />
+                                </div>
+                                <span asp-validation-for="TarifHoraire" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch bg-light p-3 rounded-3 mb-0">
+                                    <input asp-for="Disponible" type="checkbox" class="form-check-input ms-0 me-2" role="switch" id="disponibleSwitch" />
+                                    <label class="form-check-label fw-bold small mb-0" for="disponibleSwitch">Available for new assignments</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                <i class="bi bi-cloud-check me-2"></i>Save Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+
+    .form-control:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        border: 1px solid #0d6efd !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-white {
+        background-color: white;
+        color: #333;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

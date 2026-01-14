@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "New Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var services = ViewBag.Services as List<GestionPrestation.Models.Service> ?? new List<GestionPrestation.Models.Service>();
+}
+
+<div class="container-fluid px-4 py-5 bg-light-subtle" style="min-height: 100vh;">
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a asp-action="Dashboard" class="text-decoration-none small fw-bold text-uppercase tracking-wider">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                    <h1 class="h2 fw-bold mt-2 text-dark">Create New Request</h1>
+                    <p class="text-muted">Tell us what you need, and we'll handle the rest.</p>
+                </div>
+                <div class="d-none d-md-block">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4342/4342728.png" width="80" alt="icon" class="opacity-50">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="row g-4">
+
+                <div class="col-md-7">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-body p-4 p-md-5">
+                            <form asp-action="CreateRequest" method="post" id="requestForm">
+                                @Html.AntiForgeryToken()
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-dark mb-2">What service do you need?</label>
+                                    <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border">
+                                        <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
+                                        <select name="serviceId" id="serviceSelector" class="form-select border-0 ps-0 select-custom" required>
+                                            <option value="" disabled selected>Select a service type...</option>
+                                            @foreach (var service in services)
+                                            {
+                                                <option value="@service.Id" data-price="@service.PrixBase.ToString("C")" data-desc="@service.Description">
+                                                    @service.Nom (@service.PrixBase.ToString("C"))
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-dark mb-2">Specific Requirements</label>
+                                    <textarea name="description" class="form-control border-2 bg-light bg-opacity-50 rounded-3 p-3"
+                                              rows="6" placeholder="Example: I need this handled by Friday afternoon. Specifically looking for..." required></textarea>
+                                    <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Be as descriptive as possible for a faster quote.</div>
+                                </div>
+
+                                <div class="pt-3">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow mb-3">
+                                        <span class="me-2">Submit Request</span> <i class="bi bi-send-fill"></i>
+                                    </button>
+                                    <a asp-action="Dashboard" class="btn btn-link w-100 text-muted text-decoration-none small">Cancel and return</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card border-0 bg-primary bg-gradient shadow-sm rounded-4 text-white h-100">
+                        <div class="card-body p-4 p-md-5 d-flex flex-column">
+                            <h4 class="fw-bold mb-4">Summary</h4>
+
+                            <div id="servicePreview" class="mt-2">
+                                <div class="empty-state text-white text-opacity-75">
+                                    <i class="bi bi-cart-x display-4 mb-3 d-block"></i>
+                                    <p>Select a service to see details and pricing summary here.</p>
+                                </div>
+
+                                <div class="selected-state d-none">
+                                    <div class="p-3 bg-white bg-opacity-10 rounded-3 mb-4">
+                                        <h6 class="text-uppercase small fw-bold opacity-75 mb-1">Estimated Cost</h6>
+                                        <h2 class="display-5 fw-bold mb-0" id="previewPrice">$0.00</h2>
+                                    </div>
+
+                                    <h6 class="fw-bold mb-2">What's included:</h6>
+                                    <p id="previewDesc" class="small opacity-75 mb-4"></p>
+
+                                    <div class="mt-auto pt-4 border-top border-white border-opacity-10">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="bi bi-shield-check me-2 fs-5"></i>
+                                            <span class="small">Secure Payment & Verified Staff</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-clock-history me-2 fs-5"></i>
+                                            <span class="small">Response within 24 hours</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tracking-wider {
+        letter-spacing: 0.1em;
+        font-size: 0.75rem;
+    }
+
+    .select-custom:focus {
+        box-shadow: none;
+    }
+
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05);
+    }
+
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    /* Animation for the summary card */
+    #servicePreview {
+        transition: all 0.3s ease;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('serviceSelector').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const desc = selectedOption.getAttribute('data-desc');
+
+            const emptyState = document.querySelector('.empty-state');
+            const selectedState = document.querySelector('.selected-state');
+
+            if (selectedOption.value !== "") {
+                emptyState.classList.add('d-none');
+                selectedState.classList.remove('d-none');
+                document.getElementById('previewPrice').innerText = price;
+                document.getElementById('previewDesc').innerText = desc || "No detailed description provided for this service.";
+            }
+        });
+    </script>
+}

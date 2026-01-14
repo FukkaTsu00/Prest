@@ -1,0 +1,188 @@
+@model List<GestionPrestation.Models.Prestation>
+@{
+    ViewData["Title"] = "Marketplace";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4 bg-light-subtle">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Dashboard" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active">Available Jobs</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold text-dark mb-1">Service Marketplace</h1>
+            <p class="text-muted mb-0">Discover new opportunities based on your skills.</p>
+        </div>
+        <div class="bg-white p-2 rounded-pill shadow-sm border d-none d-md-flex align-items-center px-3">
+            <span class="dot bg-success me-2"></span>
+            <span class="small fw-bold text-success">@Model?.Count Live Offers</span>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-3 alert-dismissible fade show mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <div>@TempData["Success"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var p in Model)
+            {
+                <div class="col-xl-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden job-card">
+                        <div class="job-accent bg-primary"></div>
+
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 p-2">
+                                    <i class="bi bi-tools fs-4"></i>
+                                </div>
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2 h-100">
+                                    <i class="bi bi-tag-fill me-1 text-muted"></i> @p.Service?.Nom
+                                </span>
+                            </div>
+
+                            <h5 class="fw-bold text-dark mb-2">Request #@p.Id</h5>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-xs bg-light rounded-circle me-2 d-flex align-items-center justify-content-center text-muted fw-bold">
+                                    @p.Client?.Prenom.Substring(0, 1)
+                                </div>
+                                <span class="small text-muted fw-medium">Posted by @p.Client?.Nom @p.Client?.Prenom</span>
+                            </div>
+
+                            <p class="text-secondary small mb-4 line-clamp-2">
+                                @(p.Description ?? "No additional description provided for this service request.")
+                            </p>
+
+                            <div class="row g-2 mb-4">
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-2 text-center">
+                                        <div class="small text-muted mb-0">Duration</div>
+                                        <div class="fw-bold">@p.DureeEstimeeHeures h</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-2 text-center">
+                                        <div class="small text-muted mb-0">Payout</div>
+                                        <div class="fw-bold text-success">@p.PrixFinal.ToString("C")</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <a asp-action="PrestationDetails" asp-route-id="@p.Id"
+                                   class="btn btn-outline-secondary rounded-pill fw-bold small">
+                                    Full Details
+                                </a>
+
+                                @* Note: Logic check for Accept button (if no provider is yet assigned) *@
+                                @if (!p.IdPrestataire.HasValue)
+                                {
+                                    <form asp-action="AcceptPrestation" asp-route-id="@p.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm">
+                                            Accept This Job
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 mt-5">
+            <div class="empty-state-icon mx-auto mb-4">
+                <i class="bi bi-stars display-1 text-primary opacity-25"></i>
+            </div>
+            <h3 class="fw-bold">All caught up!</h3>
+            <p class="text-muted mx-auto" style="max-width: 400px;">
+                There are no new service requests available right now. We'll notify you as soon as a client needs your expertise.
+            </p>
+            <a asp-action="Dashboard" class="btn btn-light rounded-pill px-4 border">Return to Dashboard</a>
+        </div>
+    }
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .job-card {
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+
+        .job-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+            border-color: rgba(13, 110, 253, 0.2) !important;
+        }
+
+    .job-accent {
+        height: 4px;
+        width: 100%;
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar-xs {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .dot {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+        }
+
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 5px rgba(25, 135, 84, 0);
+        }
+
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+        }
+    }
+</style>

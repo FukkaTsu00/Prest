@@ -1,0 +1,99 @@
+@model List<GestionPrestation.Models.Prestation>
+@{
+    ViewData["Title"] = "Company Prestations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="bi bi-list-check me-2"></i>Company Prestations</h1>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3">
+            <h5 class="mb-0">All Prestations</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Service</th>
+                                <th>Client</th>
+                                <th>Prestataire</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prestation in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@prestation.Id</strong></td>
+                                    <td>@prestation.Service?.Nom</td>
+                                    <td>@prestation.Client?.Nom @prestation.Client?.Prenom</td>
+                                    <td>
+                                        @if (prestation.Prestataire != null)
+                                        {
+                                            <span>@prestation.Prestataire.Nom @prestation.Prestataire.Prenom</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger fw-bold">
+                                                <i class="bi bi-exclamation-circle me-1"></i>Not assigned
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetStatusBadgeClass(prestation.Statut)">@prestation.Statut</span>
+                                    </td>
+                                    <td>@prestation.PrixFinal.ToString("C")</td>
+                                    <td>@prestation.DateCreation.ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        <a asp-action="PrestationDetails" asp-route-id="@prestation.Id" 
+                                           class="btn btn-sm @(prestation.Statut == "Planifiée" && prestation.IdPrestataire == null ? "btn-warning" : "btn-outline-primary")">
+                                            <i class="bi bi-eye"></i> 
+                                            @(prestation.Statut == "Planifiée" && prestation.IdPrestataire == null ? "Assign Now" : "View")
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No prestations found</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Planifiée" => "bg-secondary",
+            "Assignée" => "bg-info",
+            "En cours" => "bg-primary",
+            "Terminée" => "bg-success",
+            "Validée" => "bg-success",
+            "Annulée" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+

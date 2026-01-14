@@ -1,0 +1,330 @@
+@{
+    ViewData["Title"] = "Services";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-green: #10b981;
+        --primary-dark: #065f46;
+        --bg-subtle: #f8fafc;
+        --border-color: #e2e8f0;
+    }
+
+    .page-wrapper {
+        padding: 2rem;
+        background-color: var(--bg-subtle);
+        min-height: 100vh;
+    }
+
+    .services-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .services-header h1 {
+        font-weight: 800;
+        font-size: 3rem;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+    }
+
+    .services-header p {
+        font-size: 1.25rem;
+        color: #64748b;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-green);
+    }
+
+    .service-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .service-card h3 {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+    }
+
+    .service-card p {
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem 0;
+        text-align: left;
+    }
+
+    .service-features li {
+        padding: 0.5rem 0;
+        color: #475569;
+        display: flex;
+        align-items: center;
+    }
+
+    .service-features li::before {
+        content: "✓";
+        color: var(--primary-green);
+        font-weight: bold;
+        margin-right: 0.75rem;
+    }
+
+    .service-action {
+        display: inline-block;
+        background: var(--primary-green);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .service-action:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+        color: white;
+        padding: 3rem;
+        border-radius: 16px;
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .cta-section h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cta-primary {
+        background: white;
+        color: var(--primary-green);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .cta-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        color: var(--primary-green);
+    }
+
+    .cta-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .cta-secondary:hover {
+        background: white;
+        color: var(--primary-green);
+    }
+
+    @@media (max-width: 768px) {
+        .services-header h1 {
+            font-size: 2rem;
+        }
+        
+        .services-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-primary, .cta-secondary {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="services-header">
+        <h1>Nos Services</h1>
+        <p>Découvrez notre plateforme complète de gestion des prestations de services</p>
+    </div>
+
+    <div class="services-grid">
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3>Gestion Clients</h3>
+            <p>Plateforme complète pour la gestion des clients et de leurs demandes de services</p>
+            <ul class="service-features">
+                <li>Suivi des demandes clients</li>
+                <li>Gestion des contrats</li>
+                <li>Historique des prestations</li>
+                <li>Communication intégrée</li>
+            </ul>
+            <a href="/Client/Dashboard" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Accéder Clients
+            </a>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-briefcase"></i>
+            </div>
+            <h3>Gestion Prestataires</h3>
+            <p>Solution complète pour les prestataires et professionnels indépendants</p>
+            <ul class="service-features">
+                <li>Profil professionnel</li>
+                <li>Gestion des disponibilités</li>
+                <li>Suivi des missions</li>
+                <li>Évaluation et feedback</li>
+            </ul>
+            <a href="/Prestataire/Dashboard" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Accéder Prestataires
+            </a>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-building"></i>
+            </div>
+            <h3>Gestion Sociétés</h3>
+            <p>Outils spécialisés pour les entreprises et organisations</p>
+            <ul class="service-features">
+                <li>Gestion multi-services</li>
+                <li>Équipe collaborative</li>
+                <li>Rapports et analytics</li>
+                <li>Intégration d'entreprise</li>
+            </ul>
+            <a href="/Company/Dashboard" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Accéder Sociétés
+            </a>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+            <h3>Gestion Prestations</h3>
+            <p>Système centralisé pour la gestion de toutes les prestations</p>
+            <ul class="service-features">
+                <li>Suivi en temps réel</li>
+                <li>Gestion des statuts</li>
+                <li>Validation qualité</li>
+                <li>Facturation intégrée</li>
+            </ul>
+            <a href="#" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Voir Prestations
+            </a>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3>Administration</h3>
+            <p>Panneau d'administration complet pour la gestion système</p>
+            <ul class="service-features">
+                <li>Gestion des utilisateurs</li>
+                <li>Configuration système</li>
+                <li>Rapports avancés</li>
+                <li>Sécurité et conformité</li>
+            </ul>
+            <a href="/Admin/Dashboard" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Accéder Admin
+            </a>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-graph-up"></i>
+            </div>
+            <h3>Analytics & Reporting</h3>
+            <p>Outils d'analyse et de reporting pour optimiser vos performances</p>
+            <ul class="service-features">
+                <li>Tableaux de bord</li>
+                <li>Métriques KPI</li>
+                <li>Export de données</li>
+                <li>Tendances et prévisions</li>
+            </ul>
+            <a href="#" class="service-action">
+                <i class="bi bi-arrow-right me-2"></i>Voir Analytics
+            </a>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Prêt à commencer ?</h2>
+        <p>Rejoignez notre plateforme et découvrez une nouvelle façon de gérer vos prestations</p>
+        <div class="cta-buttons">
+            <a href="/Identity/Account/Register" class="cta-primary">
+                <i class="bi bi-person-plus me-2"></i>Créer un compte
+            </a>
+            <a href="/Home/Contact" class="cta-secondary">
+                <i class="bi bi-envelope me-2"></i>Nous contacter
+            </a>
+        </div>
+    </div>
+</div>

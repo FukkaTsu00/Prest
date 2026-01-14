@@ -16,5 +16,6 @@ namespace GestionPrestation.Models
         // Navigation
         public Client? Client { get; set; }
         public Prestataire? Prestataire { get; set; }
+        public Societe? Societe { get; set; }
     }
 }

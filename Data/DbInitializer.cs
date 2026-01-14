@@ -1,33 +1,70 @@
-﻿// Inside Data/DbInitializer.cs (Create this new file)
-
-using GestionPrestation.Models; // Your ApplicationUser class
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using GestionPrestation.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GestionPrestation.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedRoles(IServiceProvider serviceProvider)
+        public static async Task SeedRolesAndAdmin(IServiceProvider serviceProvider)
         {
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            string[] roleNames = { "Admin", "Prestataire", "Client" };
-            IdentityResult roleResult;
+            // Roles
+            string[] roles = { "Admin", "Prestataire", "Client", "Societe" };
 
-            foreach (var roleName in roleNames)
+            foreach (var role in roles)
             {
-                // Check if the role already exists
-                var roleExist = await RoleManager.RoleExistsAsync(roleName);
-
-                if (!roleExist)
+                if (!await roleManager.RoleExistsAsync(role))
                 {
-                    // Create the roles and seed them to the database
-                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                    var r = await roleManager.CreateAsync(new IdentityRole(role));
+                    if (!r.Succeeded)
+                    {
+                        var errors = string.Join("; ", r.Errors.Select(e => e.Description));
+                        throw new InvalidOperationException($"Failed to create role '{role}': {errors}");
+                    }
                 }
             }
 
-            // Optional: Create a default admin user here if desired
+            // Admin
+            string adminEmail = "admin@admin.com";
+            string adminPassword = "Admin@123!";
+
+            var admin = await userManager.FindByEmailAsync(adminEmail);
+
+            if (admin == null)
+            {
+                admin = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    // Champs requis par votre modèle ApplicationUser
+                    FirstName = "Admin",
+                    LastName = "User"
+                };
+
+                var result = await userManager.CreateAsync(admin, adminPassword);
+
+                if (result.Succeeded)
+                {
+                    var addRoleResult = await userManager.AddToRoleAsync(admin, "Admin");
+                    if (!addRoleResult.Succeeded)
+                    {
+                        var errors = string.Join("; ", addRoleResult.Errors.Select(e => e.Description));
+                        throw new InvalidOperationException($"Failed to add Admin role to seeded user: {errors}");
+                    }
+                }
+                else
+                {
+                    var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                    throw new InvalidOperationException($"Seed admin creation failed: {errors}");
+                }
+            }
         }
     }
 }

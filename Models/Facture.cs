@@ -11,6 +11,7 @@ namespace GestionPrestation.Models
 
     public class Facture
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]

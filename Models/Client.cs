@@ -16,8 +16,8 @@ namespace GestionPrestation.Models
 
         // 🔗 Identity relation
         [Required]
-        public string ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public string ApplicationUserId { get; set; } = null!;
+        public ApplicationUser? ApplicationUser { get; set; }
 
         [Required, StringLength(100)]
         public string Nom { get; set; } = null!;
@@ -27,6 +27,10 @@ namespace GestionPrestation.Models
 
         [Required, StringLength(20)]
         public string Telephone { get; set; } = null!;
+
+        [Required, StringLength(255)]
+        [EmailAddress]
+        public string Email { get; set; } = null!;
 
         [StringLength(255)]
         public string? Adresse { get; set; }

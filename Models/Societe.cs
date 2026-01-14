@@ -13,6 +13,11 @@ namespace GestionPrestation.Models
         [Key]
         public int Id { get; set; }
 
+        // 🔗 Identity relation
+        [Required]
+        public string ApplicationUserId { get; set; } = null!;
+        public ApplicationUser? ApplicationUser { get; set; }
+
         [Required, StringLength(100)]
         public string Nom { get; set; } = null!;
 
@@ -25,7 +30,13 @@ namespace GestionPrestation.Models
         [Required, StringLength(50)]
         public string NumeroStringCommerce { get; set; } = null!;
 
+        // Approval status
+        public bool IsApproved { get; set; } = false;
+        public DateTime? ApprovedDate { get; set; }
+        public string? ApprovedBy { get; set; }
+
         // Navigation
+        public ICollection<Service>? Services { get; set; }
         public ICollection<Prestation>? Prestations { get; set; }
     }
 }

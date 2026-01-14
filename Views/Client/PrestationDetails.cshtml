@@ -1,0 +1,292 @@
+@model GestionPrestation.Models.Prestation
+@{
+    ViewData["Title"] = "Prestation Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-5 bg-light-subtle">
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-action="Dashboard" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Prestation #@Model.Id</li>
+                </ol>
+            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 fw-bold text-dark mb-0">Order Details</h1>
+                <a asp-action="MyPrestations" class="btn btn-white border shadow-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="row g-4">
+
+                <div class="col-lg-8">
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div>
+                                    <span class="badge @GetStatusBadgeClass(Model.Statut) px-3 py-2 rounded-pill mb-2">
+                                        @Model.Statut
+                                    </span>
+                                    <h2 class="fw-bold">@Model.Service?.Nom</h2>
+                                    <p class="text-muted"><i class="bi bi-calendar-event me-2"></i>Requested on @Model.DateCreation.ToString("MMM dd, yyyy")</p>
+                                </div>
+                                <div class="text-end">
+                                    <h3 class="fw-bold text-primary mb-0">@Model.PrixFinal.ToString("C")</h3>
+                                    <small class="text-muted">Total Amount</small>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 opacity-50">
+
+                            <div class="row g-4">
+                                <div class="col-md-12">
+                                    <h6 class="fw-bold text-uppercase small text-muted mb-3" style="letter-spacing: 1px;">Service Description</h6>
+                                    <p class="text-dark bg-light p-3 rounded-3 border-start border-4 border-primary">
+                                        @Model.Description
+                                    </p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-uppercase small text-muted mb-2">Assigned Professional</h6>
+                                    @if (Model.Prestataire != null)
+                                    {
+                                        <div class="d-flex align-items-center p-2 border rounded-3 bg-white">
+                                            <div class="avatar-sm bg-primary-soft text-primary rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-person-check fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@Model.Prestataire.Nom @Model.Prestataire.Prenom</div>
+                                                <small class="text-muted">@Model.Prestataire.Specialite</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-secondary py-2 px-3 mb-0 small rounded-3">
+                                            <i class="bi bi-hourglass me-2"></i>Waiting for assignment...
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-uppercase small text-muted mb-2">Execution Period</h6>
+                                    <div class="small">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Start:</span>
+                                            <span class="fw-bold">@(Model.DateDebut?.ToString("dd MMM yyyy") ?? "Not started")</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Estimated End:</span>
+                                            <span class="fw-bold">@(Model.DateFin?.ToString("dd MMM yyyy") ?? "TBD")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ProgressUpdates) || !string.IsNullOrEmpty(Model.PrestataireNotes))
+                    {
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-header bg-white border-0 pt-4 px-4">
+                                <h5 class="fw-bold mb-0">Activity Log</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                @if (!string.IsNullOrEmpty(Model.ProgressUpdates))
+                                {
+                                    <div class="modern-timeline ms-2">
+                                        @foreach (var update in Model.ProgressUpdates.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <div class="timeline-point pb-4">
+                                                <div class="timeline-content ps-4 border-start border-2 position-relative">
+                                                    <div class="marker bg-primary rounded-circle shadow-sm"></div>
+                                                    <p class="mb-0 text-dark small">@update</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.PrestataireNotes))
+                                {
+                                    <div class="mt-2 p-3 bg-warning-soft rounded-3 border-start border-4 border-warning">
+                                        <h6 class="fw-bold small mb-1"><i class="bi bi-journal-text me-2"></i>Note from Professional:</h6>
+                                        <p class="mb-0 small italic">"@Model.PrestataireNotes"</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                        <div class="card-body p-4 text-center">
+                            <h6 class="fw-bold text-muted text-uppercase small mb-4">Current Progress</h6>
+                            <div class="position-relative d-inline-block mb-4">
+                                <svg width="150" height="150" viewBox="0 0 150 150">
+                                    <circle cx="75" cy="75" r="65" fill="none" stroke="#f1f5f9" stroke-width="12" />
+                                    @{
+                                        var progress = GetProgress(Model.Statut);
+                                        var offset = 408 - (408 * progress / 100);
+                                    }
+                                    <circle cx="75" cy="75" r="65" fill="none" stroke="url(#gradient)" stroke-width="12"
+                                            stroke-dasharray="408" stroke-dashoffset="@offset"
+                                            stroke-linecap="round" transform="rotate(-90 75 75)" />
+                                    <defs>
+                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#0d6efd" />
+                                            <stop offset="100%" style="stop-color:#0dcaf0" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <h2 class="fw-bold mb-0">@progress%</h2>
+                                </div>
+                            </div>
+                            <p class="small text-muted mb-0">Everything looks on track!</p>
+                        </div>
+                    </div>
+
+                    @if (Model.ClientRating.HasValue)
+                    {
+                        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-dark text-white">
+                            <div class="card-body p-4 text-center">
+                                <h6 class="text-uppercase small opacity-75 mb-3">Your Review</h6>
+                                <div class="mb-3">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        <i class="bi @(i < Model.ClientRating.Value ? "bi-star-fill text-warning" : "bi-star text-white-50") fs-4 mx-1"></i>
+                                    }
+                                </div>
+                                <p class="small fst-italic mb-0 opacity-75">"@Model.ClientFeedback"</p>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3">Available Actions</h6>
+                            <div class="d-grid gap-2">
+                                @if (Model.Statut == "Planifiée" || Model.Statut == "Assignée")
+                                {
+                                    <form asp-action="CancelPrestation" asp-route-id="@Model.Id" method="post" id="cancelForm">
+                                        @Html.AntiForgeryToken()
+                                        <button type="button" class="btn btn-outline-danger w-100 rounded-pill" onclick="confirmCancel()">
+                                            <i class="bi bi-x-lg me-2"></i>Cancel Request
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (Model.Statut == "Terminée" && !Model.ClientRating.HasValue)
+                                {
+                                    <a asp-action="RatePrestation" asp-route-id="@Model.Id" class="btn btn-warning w-100 rounded-pill fw-bold shadow-sm">
+                                        <i class="bi bi-star-fill me-2"></i>Rate Service
+                                    </a>
+                                }
+
+                                <button class="btn btn-light border w-100 rounded-pill">
+                                    <i class="bi bi-chat-dots me-2"></i>Contact Support
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .bg-primary-soft {
+        background-color: #eef2ff;
+    }
+
+    .bg-warning-soft {
+        background-color: #fffbeb;
+    }
+
+    .avatar-sm {
+        width: 42px;
+        height: 42px;
+    }
+
+    /* Timeline styling */
+    .timeline-content {
+        border-left-color: #e2e8f0 !important;
+    }
+
+    .marker {
+        position: absolute;
+        left: -7px;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border: 2px solid white;
+    }
+
+    /* SVG Animation */
+    circle {
+        transition: stroke-dashoffset 1s ease-in-out;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmCancel() {
+            Swal.fire({
+                title: 'Cancel Request?',
+                text: "Are you sure you want to cancel this prestation? This cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, cancel it!',
+                customClass: {
+                    confirmButton: 'rounded-pill px-4',
+                    cancelButton: 'rounded-pill px-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelForm').submit();
+                }
+            })
+        }
+    </script>
+}
+
+@functions {
+    string GetStatusBadgeClass(string status) => status switch
+    {
+        "En cours" => "bg-primary text-white shadow-sm",
+        "Terminée" => "bg-success text-white shadow-sm",
+        "Assignée" => "bg-info text-white shadow-sm",
+        "Annulée" => "bg-danger text-white shadow-sm",
+        _ => "bg-secondary text-white shadow-sm"
+    };
+
+    int GetProgress(string status) => status switch
+    {
+        "Planifiée" => 15,
+        "Assignée" => 40,
+        "En cours" => 75,
+        "Terminée" => 100,
+        "Validée" => 100,
+        _ => 5
+    };
+}

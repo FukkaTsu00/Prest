@@ -1,0 +1,223 @@
+@model GestionPrestation.Models.Prestation
+@{
+    ViewData["Title"] = "Manage Job #" + Model.Id;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4 bg-light-subtle">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-action="MyPrestations">Assignments</a></li>
+                    <li class="breadcrumb-item active">Job #@Model.Id</li>
+                </ol>
+            </nav>
+            <h1 class="h3 fw-bold text-dark mb-0">
+                <i class="bi bi-stack me-2 text-primary"></i>@Model.Service?.Nom
+            </h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge @GetStatusBadgeClass(Model.Statut) fs-6 px-3 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-info-circle me-1"></i> @Model.Statut
+            </span>
+            <a asp-action="MyPrestations" class="btn btn-white border rounded-pill px-3 shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Project Overview</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Client Contact</label>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-md bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold">
+                                    @Model.Client?.Prenom.Substring(0, 1)
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">@Model.Client?.Nom @Model.Client?.Prenom</div>
+                                    <div class="small text-muted">Premium Member</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Budget</label>
+                            <div class="h5 fw-bold text-primary mb-0">@Model.PrixFinal.ToString("C")</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Estimate</label>
+                            <div class="h5 fw-bold text-dark mb-0">@Model.DureeEstimeeHeures h</div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Description</label>
+                            <p class="text-dark bg-light p-3 rounded-3 mb-0">@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Activity Log</h5>
+                    <span class="badge bg-light text-muted border rounded-pill">Real-time updates</span>
+                </div>
+                <div class="card-body p-4">
+                    @if (!string.IsNullOrEmpty(Model.ProgressUpdates))
+                    {
+                        <div class="modern-timeline">
+                            @foreach (var update in Model.ProgressUpdates.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <div class="timeline-entry mb-4 ps-4 position-relative">
+                                    <div class="timeline-dot"></div>
+                                    <div class="p-3 bg-white border rounded-3 shadow-sm">
+                                        <div class="small text-muted mb-1"><i class="bi bi-clock me-1"></i> Update Logged</div>
+                                        <div class="text-dark">@update</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-journal-text display-6 opacity-25 d-block mb-2"></i>
+                            No progress logged yet. Start working to update the client.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-header bg-dark text-white border-0 py-3 px-4">
+                    <h5 class="mb-0 small fw-bold text-uppercase tracking-wider">Control Center</h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    @if (Model.Statut == "Assignée")
+                    {
+                        <div class="bg-info bg-opacity-10 p-4 rounded-4 mb-3">
+                            <i class="bi bi-play-circle-fill display-4 text-info mb-3 d-block"></i>
+                            <h6>Ready to start?</h6>
+                            <p class="small text-muted mb-4">Starting the job will notify the client you are on-site.</p>
+                            <form asp-action="UpdateStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="status" value="En cours" />
+                                <button type="submit" class="btn btn-info text-white w-100 rounded-pill fw-bold">Initialize Work</button>
+                            </form>
+                        </div>
+                    }
+                    else if (Model.Statut == "En cours")
+                    {
+                        <div class="bg-success bg-opacity-10 p-4 rounded-4 mb-3 text-center">
+                            <i class="bi bi-check-circle-fill display-4 text-success mb-3 d-block"></i>
+                            <h6>Finish Job?</h6>
+                            <p class="small text-muted mb-4">Ensure all tasks are completed before final validation.</p>
+                            <form asp-action="UpdateStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="status" value="Terminée" />
+                                <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold">Mark as Complete</button>
+                            </form>
+                        </div>
+                    }
+
+                    <div class="text-start mt-4">
+                        <label class="form-label fw-bold small text-muted">Post a Daily Update</label>
+                        <form asp-action="UpdateProgress" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <textarea name="progressUpdate" class="form-control border-light bg-light mb-3" rows="3"
+                                      placeholder="Ex: Arrived at site, materials ready..."></textarea>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">
+                                <i class="bi bi-send-fill me-2"></i>Share Update
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ClientRating.HasValue)
+            {
+                <div class="card border-0 shadow-sm rounded-4 bg-gradient-warning text-white p-4 text-center">
+                    <h6 class="text-uppercase small fw-bold mb-3">Client Satisfaction</h6>
+                    <div class="mb-2">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <i class="bi @(i < Model.ClientRating.Value ? "bi-star-fill" : "bi-star") fs-3 mx-1 text-white"></i>
+                        }
+                    </div>
+                    <p class="mb-0 fw-italic opacity-90 mt-2">"@Model.ClientFeedback"</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .avatar-md {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.1em;
+    }
+
+    .btn-white {
+        background: white;
+        color: #333;
+    }
+
+    /* Timeline Design */
+    .modern-timeline {
+        border-left: 2px dashed #dee2e6;
+        margin-left: 10px;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -7px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        background-color: #0d6efd;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    }
+</style>
+
+@functions {
+    string GetStatusBadgeClass(string status) => status switch
+    {
+        "En cours" => "bg-primary-subtle text-primary",
+        "Terminée" => "bg-success-subtle text-success",
+        "Validée" => "bg-success text-white",
+        "Assignée" => "bg-info-subtle text-info",
+        "Annulée" => "bg-danger-subtle text-danger",
+        _ => "bg-secondary-subtle text-secondary"
+    };
+}

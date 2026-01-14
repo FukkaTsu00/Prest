@@ -1,4 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// (modifié) : correction du redirect pour Admin
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -21,18 +22,16 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        // 🎯 ADD USER MANAGER FIELD 🎯
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(
             SignInManager<ApplicationUser> signInManager,
-            // 🎯 INJECT USER MANAGER 🎯
             UserManager<ApplicationUser> userManager,
             ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
-            _userManager = userManager; // Assign user manager
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -90,29 +89,27 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-
-                    // 🎯 STEP 1: Get the ApplicationUser object 
                     var user = await _userManager.FindByEmailAsync(Input.Email);
-
-                    // 🎯 STEP 2: Check the user's role and redirect accordingly 🎯
-
                     if (user != null)
                     {
-                        if (await _userManager.IsInRoleAsync(user, "Admin"))
-                        {
-                            return LocalRedirect("/Admin/Dashboard");
-                        }
-                        else if (await _userManager.IsInRoleAsync(user, "Prestataire"))
-                        {
-                            return LocalRedirect("/Prestataire/Dashboard");
-                        }
-                        else if (await _userManager.IsInRoleAsync(user, "Client"))
-                        {
-                            return LocalRedirect("/Client/Dashboard");
-                        }
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Admin"))
+                    {
+                        return Redirect("/Admin/Dashboard");
                     }
-
-                    // Fallback to the original returnUrl if no specific role matched (or if user was somehow null)
+                    else if (roles.Contains("Client"))
+                    {
+                        return Redirect("/Client/Dashboard");
+                    }
+                    else if (roles.Contains("Prestataire"))
+                    {
+                        return Redirect("/Prestataire/Dashboard");
+                    }
+                    else if (roles.Contains("Societe"))
+                    {
+                        return Redirect("/Company/Dashboard");
+                    }
+                    }
                     return LocalRedirect(returnUrl);
                 }
 
@@ -132,8 +129,7 @@ namespace GestionPrestation.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }
-}
+}   

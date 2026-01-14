@@ -1,101 +1,755 @@
-﻿@{
-    ViewData["Title"] = "Home - Gestion de Prestation";
+@{
+    ViewData["Title"] = "Accueil - GestionPrestation";
 }
 
-<main>
-
-    <!-- Hero Section -->
-    <section class="hero-section d-flex align-items-center text-center text-white" style="min-height: 90vh; background: linear-gradient(135deg, #1f4287, #2196f3);">
-        <div class="container py-5">
-            <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">
-                Manage Services. Connect Professionals. Succeed.
-            </h1>
-            <p class="lead mb-5 animate__animated animate__fadeInUp">
-                The integrated platform for effortless service management, from contract negotiation to final payment.
-            </p>
-            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center animate__animated animate__fadeInUp animate__delay-1s">
-                <a asp-area="Identity" asp-page="/Account/Register" asp-route-role="Prestataire" class="btn btn-light btn-lg px-4 shadow-sm">
-                    Become a Prestataire
-                </a>
-                <a asp-area="Identity" asp-page="/Account/Register" asp-route-role="Client" class="btn btn-outline-light btn-lg px-4 shadow-sm">
-                    Find a Service
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="container py-5">
-        <h2 class="text-center mb-5 fw-light">Solutions for seamless service delivery</h2>
-        <div class="row text-center g-4">
-
-            <div class="col-lg-4">
-                <div class="card shadow-sm h-100 p-5 border-0 rounded-4 text-center hover-card">
-                    <i class="bi bi-file-earmark-text-fill text-primary mb-3"></i>
-                    <h3 class="h5 fw-bold">Contract Automation</h3>
-                    <p class="text-muted mt-2">Generate, manage, and sign contracts digitally. Minimize paperwork and maximize compliance.</p>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card shadow-sm h-100 p-5 border-0 rounded-4 text-center hover-card">
-                    <i class="bi bi-currency-dollar text-primary mb-3"></i>
-                    <h3 class="h5 fw-bold">Integrated Billing</h3>
-                    <p class="text-muted mt-2">Issue professional invoices (Factures) and track payments (Paiement) directly within the system.</p>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card shadow-sm h-100 p-5 border-0 rounded-4 text-center hover-card">
-                    <i class="bi bi-people-fill text-primary mb-3"></i>
-                    <h3 class="h5 fw-bold">Verified Professionals</h3>
-                    <p class="text-muted mt-2">Connect only with Admin-approved Prestataires who meet our quality and background standards.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="bg-primary text-white py-5 text-center">
-        <div class="container">
-            <h3 class="mb-4 fw-bold">Ready to transform your service management?</h3>
-            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-light btn-lg px-5 shadow-sm">
-                Get Started Today
-            </a>
-        </div>
-    </section>
-
-</main>
-
-<!-- Custom Styles -->
 <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
     }
 
-    .hero-section h1 {
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+    .hero-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
     }
 
-    .card i {
-        font-size: 3rem;
-        transition: transform 0.3s ease;
+    .hero-content {
+        position: relative;
+        z-index: 2;
     }
 
-    .hover-card:hover i {
-        transform: scale(1.2);
-    }
-
-    .hover-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 1rem 3rem rgba(0,0,0,0.25) !important;
-    }
-
-    .btn-lg {
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1.5rem;
         border-radius: 50px;
+        color: white;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1.5rem;
+        font-family: 'Space Grotesk', sans-serif;
+        line-height: 1.2;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 3rem;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .btn-hero {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-hero-primary {
+        background: white;
+        color: var(--primary-color);
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        color: var(--primary-dark);
+    }
+
+    .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 3rem;
+        margin-top: 4rem;
+        animation: fadeInUp 0.8s ease-out 0.8s both;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+
+    .hero-image {
+        position: relative;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 6rem 0;
+        background: #f8fafc;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-badge {
+        display: inline-block;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-color);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-primary);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+
+    .feature-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-link:hover {
+        gap: 1rem;
+    }
+
+    /* Roles Section */
+    .roles-section {
+        padding: 6rem 0;
+        background: white;
+    }
+
+    .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .role-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .role-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        margin: 0 auto 1.5rem;
+    }
+
+    .role-icon.client {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .role-icon.company {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .role-icon.prestataire {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .role-icon.admin {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .role-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .role-description {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .role-features {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+    }
+
+    .role-features li {
+        padding: 0.5rem 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .role-features li::before {
+        content: '✓';
+        color: var(--primary-color);
+        font-weight: bold;
+    }
+
+    /* Process Section */
+    .process-section {
+        padding: 6rem 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .process-timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .process-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+    }
+
+    .process-step {
+        background: white;
+        border: 3px solid var(--primary-color);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--primary-color);
+        position: relative;
+        z-index: 2;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .process-content {
+        margin-top: 3rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .process-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    .process-card h4 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .process-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 6rem 0;
+        background: var(--gradient-primary);
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .cta-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Animations */
+    @@keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+
+        .hero-stats {
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .features-grid,
+        .roles-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .process-timeline {
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .process-line {
+            width: 2px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
     }
 </style>
 
-<!-- Optional: Animate.css for subtle animations -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-pattern"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Plateforme de Gestion des Prestations
+                    </div>
+                    <h1 class="hero-title">
+                        Gérez vos prestations avec excellence
+                    </h1>
+                    <p class="hero-subtitle">
+                        La plateforme complète pour gérer les services, prestations, communication et suivi entre tous les acteurs impliqués.
+                    </p>
+                    <div class="hero-buttons">
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn-hero btn-hero-primary">
+                            <i class="bi bi-person-badge"></i>
+                            Espace Client
+                        </a>
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn-hero btn-hero-secondary">
+                            <i class="bi bi-tools"></i>
+                            Espace Prestataire
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Prestataires</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">1000+</div>
+                            <div class="stat-label">Prestations</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <div class="floating-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white text-primary rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-briefcase"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white mb-0">Prestation en cours</h6>
+                                <small style="color: rgba(255,255,255,0.8);">Développement Web</small>
+                            </div>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px; background: rgba(255,255,255,0.2);">
+                            <div class="progress-bar bg-white" style="width: 75%; border-radius: 4px;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                            <span>Prestataire: Jean Dupont</span>
+                            <span>75% complété</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Fonctionnalités</div>
+            <h2 class="section-title">Outils complets pour la gestion des prestations</h2>
+            <p class="section-subtitle">Des fonctionnalités puissantes pour chaque aspect de votre système</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-file-earmark-contract"></i>
+                </div>
+                <h3 class="feature-title">Gestion des Contrats</h3>
+                <p class="feature-description">
+                    Générez, gérez et signez des contrats numériquement entre clients et prestataires.
+                </p>
+                <a href="#" class="feature-link">
+                    En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <h3 class="feature-title">Suivi des Prestations</h3>
+                <p class="feature-description">
+                    Suivez l'avancement des prestations en temps réel avec statuts et notifications.
+                </p>
+                <a href="#" class="feature-link">
+                    En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-receipt-cutoff"></i>
+                </div>
+                <h3 class="feature-title">Facturation Automatisée</h3>
+                <p class="feature-description">
+                    Émettez des factures automatiquement et suivez les paiements des prestations.
+                </p>
+                <a href="#" class="feature-link">
+                    En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Roles Section -->
+<section class="roles-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Rôles</div>
+            <h2 class="section-title">Quatre rôles essentiels pour un système parfait</h2>
+            <p class="section-subtitle">Chaque acteur a un rôle défini pour garantir une gestion fluide des prestations</p>
+        </div>
+        
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-icon client">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <h3 class="role-title">Client</h3>
+                <p class="role-description">Demande et consomme les services</p>
+                <ul class="role-features">
+                    <li>Soumettre des demandes de services</li>
+                    <li>Fournir les informations nécessaires</li>
+                    <li>Valider ou rejeter les prestations</li>
+                    <li>Donner un feedback sur la qualité</li>
+                    <li>Respecter les conditions de paiement</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon company">
+                    <i class="bi bi-building"></i>
+                </div>
+                <h3 class="role-title">Entreprise</h3>
+                <p class="role-description">Offre et supervise les services</p>
+                <ul class="role-features">
+                    <li>Définir les services disponibles</li>
+                    <li>Assigner les prestations</li>
+                    <li>Fixer les prix et délais</li>
+                    <li>Surveiller la performance</li>
+                    <li>Gérer les contrats et facturation</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon prestataire">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h3 class="role-title">Prestataire</h3>
+                <p class="role-description">Exécute les prestations</p>
+                <ul class="role-features">
+                    <li>Accepter les prestations assignées</li>
+                    <li>Exécuter selon spécifications</li>
+                    <li>Communiquer l'avancement</li>
+                    <li>Mettre à jour le statut</li>
+                    <li>Respecter les standards de qualité</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon admin">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+                <h3 class="role-title">Admin</h3>
+                <p class="role-description">Gère et supervise le système</p>
+                <ul class="role-features">
+                    <li>Gérer les comptes utilisateurs</li>
+                    <li>Configurer les services</li>
+                    <li>Surveiller l'activité</li>
+                    <li>Assurer la sécurité</li>
+                    <li>Générer les rapports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Processus</div>
+            <h2 class="section-title">Comment ça fonctionne</h2>
+            <p class="section-subtitle">Un flux de travail simple pour une gestion efficace</p>
+        </div>
+        
+        <div class="process-timeline">
+            <div class="process-line"></div>
+            <div class="process-step">1</div>
+            <div class="process-step">2</div>
+            <div class="process-step">3</div>
+        </div>
+        
+        <div class="process-content">
+            <div class="process-card">
+                <h4>Demande de Service</h4>
+                <p>Le client soumet une demande détaillée avec ses besoins et délais</p>
+            </div>
+            <div class="process-card">
+                <h4>Assignation</h4>
+                <p>L'entreprise assigne la prestation au prestataire le plus adapté</p>
+            </div>
+            <div class="process-card">
+                <h4>Exécution & Suivi</h4>
+                <p>Le prestataire exécute et met à jour l'avancement en temps réel</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Prêt à optimiser votre gestion des prestations?</h2>
+            <p class="cta-subtitle">Rejoignez notre plateforme et transformez votre façon de gérer les services</p>
+            <div class="cta-buttons">
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn-hero btn-hero-primary">
+                    <i class="bi bi-rocket-takeoff"></i>
+                    Commencer Maintenant
+                </a>
+                <a href="/Home/Contact" class="btn-hero btn-hero-secondary">
+                    <i class="bi bi-info-circle"></i>
+                    En Savoir Plus
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

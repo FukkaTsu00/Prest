@@ -1,0 +1,182 @@
+@model GestionPrestation.Services.CompanyDashboardViewModel
+@{
+    ViewData["Title"] = "Company Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="bi bi-speedometer2 me-2"></i>Company Dashboard</h1>
+        <span class="badge bg-warning px-3 py-2"><i class="bi bi-building me-1"></i>@Model.Societe?.Nom</span>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card text-center">
+                <div class="card-body">
+                    <div class="stat-icon bg-primary bg-opacity-10 mx-auto mb-3">
+                        <i class="bi bi-briefcase text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-2">@Model.TotalServices</h3>
+                    <p class="text-muted mb-0">Total Services</p>
+                    <a asp-action="Services" class="btn btn-sm btn-outline-primary mt-2">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card text-center">
+                <div class="card-body">
+                    <div class="stat-icon bg-success bg-opacity-10 mx-auto mb-3">
+                        <i class="bi bi-hourglass-split text-success"></i>
+                    </div>
+                    <h3 class="fw-bold text-success mb-2">@Model.ActivePrestations</h3>
+                    <p class="text-muted mb-0">Active Prestations</p>
+                    <a asp-action="Prestations" class="btn btn-sm btn-outline-success mt-2">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card text-center">
+                <div class="card-body">
+                    <div class="stat-icon bg-info bg-opacity-10 mx-auto mb-3">
+                        <i class="bi bi-people text-info"></i>
+                    </div>
+                    <h3 class="fw-bold text-info mb-2">-</h3>
+                    <p class="text-muted mb-0">Prestataires</p>
+                    <a asp-action="Prestataires" class="btn btn-sm btn-outline-info mt-2">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card text-center bg-gradient-warning text-white">
+                <div class="card-body">
+                    <div class="stat-icon bg-white bg-opacity-20 mx-auto mb-3">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2">@Model.TotalRevenue.ToString("C")</h3>
+                    <p class="mb-0 opacity-75">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Prestations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Recent Prestations</h5>
+                    <a asp-action="Prestations" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.RecentPrestations != null && Model.RecentPrestations.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Service</th>
+                                        <th>Client</th>
+                                        <th>Prestataire</th>
+                                        <th>Status</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var prestation in Model.RecentPrestations)
+                                    {
+                                        <tr>
+                                            <td>#@prestation.Id</td>
+                                            <td>@prestation.Service?.Nom</td>
+                                            <td>@prestation.Client?.Nom @prestation.Client?.Prenom</td>
+                                            <td>
+                                                @if (prestation.Prestataire != null)
+                                                {
+                                                    <span>@prestation.Prestataire.Nom @prestation.Prestataire.Prenom</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not assigned</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @GetStatusBadgeClass(prestation.Statut)">@prestation.Statut</span>
+                                            </td>
+                                            <td>@prestation.PrixFinal.ToString("C")</td>
+                                            <td>
+                                                <a asp-action="PrestationDetails" asp-route-id="@prestation.Id" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <p class="text-muted mt-3">No prestations yet</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    }
+</style>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Planifiée" => "bg-secondary",
+            "Assignée" => "bg-info",
+            "En cours" => "bg-primary",
+            "Terminée" => "bg-success",
+            "Validée" => "bg-success",
+            "Annulée" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+
+
+
+
+
+
+

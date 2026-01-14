@@ -1,0 +1,163 @@
+@model GestionPrestation.Models.Client
+@{
+    ViewData["Title"] = "My Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-5 bg-light-subtle">
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto text-center text-md-start">
+            <h1 class="h2 fw-bold text-dark"><i class="bi bi-person-gear me-2 text-primary"></i>Account Settings</h1>
+            <p class="text-muted">Manage your personal information and contact preferences.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden text-center p-4">
+                        <div class="position-relative d-inline-block mx-auto mb-3">
+                            <div class="avatar-xl bg-primary bg-gradient rounded-circle d-flex align-items-center justify-content-center text-white shadow">
+                                <span class="display-5 fw-bold">@Model.Prenom.Substring(0, 1)@Model.Nom.Substring(0, 1)</span>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-success border border-white border-3 rounded-circle p-2" title="Active Account"></span>
+                        </div>
+                        <h4 class="fw-bold mb-1">@Model.Prenom @Model.Nom</h4>
+                        <p class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mb-3">@Model.TypeClient Account</p>
+
+                        <hr class="my-4 opacity-25">
+
+                        <div class="text-start mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-envelope text-muted me-3 fs-5"></i>
+                                <div class="small">
+                                    <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Email Address</span>
+                                    <span class="text-dark fw-semibold">@Model.Email</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-calendar-check text-muted me-3 fs-5"></i>
+                                <div class="small">
+                                    <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Member Since</span>
+                                    <span class="text-dark fw-semibold">@Model.DateInscription.ToString("MMMM yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info border-0 rounded-3 p-3 small">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Your profile is visible to assigned professionals.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-header bg-white border-0 py-4 px-4">
+                            <h5 class="fw-bold mb-0">Personal Details</h5>
+                        </div>
+                        <div class="card-body p-4 px-md-5">
+                            <form asp-action="Profile" method="post" id="profileForm">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" asp-for="Id" />
+                                <input type="hidden" asp-for="ApplicationUserId" />
+                                <input type="hidden" asp-for="DateInscription" />
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label asp-for="Prenom" class="form-label fw-semibold small">First Name</label>
+                                        <input asp-for="Prenom" class="form-control rounded-3 border-2 p-2 px-3 bg-light bg-opacity-50" required />
+                                        <span asp-validation-for="Prenom" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="Nom" class="form-label fw-semibold small">Last Name</label>
+                                        <input asp-for="Nom" class="form-control rounded-3 border-2 p-2 px-3 bg-light bg-opacity-50" required />
+                                        <span asp-validation-for="Nom" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label asp-for="Email" class="form-label fw-semibold small">Email Address</label>
+                                        <input asp-for="Email" type="email" class="form-control rounded-3 border-2 p-2 px-3 bg-light bg-opacity-50" required />
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label asp-for="Telephone" class="form-label fw-semibold small">Phone Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-2"><i class="bi bi-telephone"></i></span>
+                                            <input asp-for="Telephone" class="form-control rounded-end-3 border-2 p-2 px-3 bg-light bg-opacity-50" required />
+                                        </div>
+                                        <span asp-validation-for="Telephone" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label asp-for="TypeClient" class="form-label fw-semibold small">Account Category</label>
+                                        <select asp-for="TypeClient" class="form-select rounded-3 border-2 p-2 px-3 bg-light bg-opacity-50">
+                                            <option value="Particulier">Particulier (Individual)</option>
+                                            <option value="Entreprise">Entreprise (Business)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label asp-for="Adresse" class="form-label fw-semibold small">Primary Address</label>
+                                        <textarea asp-for="Adresse" class="form-control rounded-3 border-2 p-2 px-3 bg-light bg-opacity-50" rows="3" placeholder="Street name, City, Zip Code..."></textarea>
+                                        <span asp-validation-for="Adresse" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                                    <a asp-action="Dashboard" class="btn btn-link text-muted text-decoration-none">
+                                        Cancel Changes
+                                    </a>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 shadow-sm fw-bold">
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 mt-4 bg-dark text-white">
+                        <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="fw-bold mb-1"><i class="bi bi-shield-lock me-2"></i>Security & Password</h6>
+                                <p class="small text-white-50 mb-0">Looking to change your password or security settings?</p>
+                            </div>
+                            <a href="/Identity/Account/Manage/ChangePassword" class="btn btn-outline-light btn-sm rounded-pill px-3">Manage Settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .avatar-xl {
+        width: 100px;
+        height: 100px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #fff !important;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -16,8 +16,8 @@ namespace GestionPrestation.Models
 
         // 🔗 Identity relation
         [Required]
-        public string ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public string ApplicationUserId { get; set; } = null!;
+        public ApplicationUser? ApplicationUser { get; set; }
 
         [Required, StringLength(100)]
         public string Nom { get; set; } = null!;
@@ -36,6 +36,11 @@ namespace GestionPrestation.Models
         public bool Disponible { get; set; } = true;
 
         public DateTime DateInscription { get; set; } = DateTime.Now;
+
+        // Approval status
+        public bool IsApproved { get; set; } = false;
+        public DateTime? ApprovedDate { get; set; }
+        public string? ApprovedBy { get; set; }
 
         // Navigation
         public ICollection<Prestation>? Prestations { get; set; }

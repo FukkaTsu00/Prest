@@ -116,6 +116,11 @@ namespace GestionPrestation.Migrations
                     b.Property<DateTime>("DateInscription")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -157,6 +162,10 @@ namespace GestionPrestation.Migrations
 
                     b.Property<DateTime?>("DateFin")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("IdClient")
                         .HasColumnType("int");
@@ -304,10 +313,19 @@ namespace GestionPrestation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateInscription")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Disponible")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
                     b.Property<string>("Nom")
@@ -348,39 +366,173 @@ namespace GestionPrestation.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateDebut")
+                    b.Property<string>("ClientFeedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ClientRating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateAssignation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateDebut")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateFin")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateValidation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateValidationQualite")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DureeEstimeeHeures")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DureeReelleHeures")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdClient")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdPrestataire")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdService")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DureeHeures")
-                        .HasColumnType("int");
+                    b.Property<string>("PrestataireNotes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdPrestataire")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdSociete")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MontantTotal")
+                    b.Property<decimal>("PrixFinal")
                         .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("ProgressUpdates")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("QualiteValidee")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RapportFinal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SocieteId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Statut")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ValidateurQualite")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("IdClient");
 
                     b.HasIndex("IdPrestataire");
 
-                    b.HasIndex("IdSociete");
+                    b.HasIndex("IdService");
+
+                    b.HasIndex("SocieteId");
 
                     b.ToTable("Prestations");
+                });
+
+            modelBuilder.Entity("GestionPrestation.Models.Service", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AverageRating")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BillingType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Categorie")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CompletedPrestations")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Deliverables")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DureeEstimeeHeures")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdSociete")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("MaxConcurrentPrestations")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("PrixBase")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Requirements")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("RequiresApproval")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SkillsRequired")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("TVA")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("TotalPrestations")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdSociete");
+
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("GestionPrestation.Models.Societe", b =>
@@ -396,10 +548,23 @@ namespace GestionPrestation.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -412,6 +577,9 @@ namespace GestionPrestation.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
 
                     b.ToTable("Societes");
                 });
@@ -665,21 +833,53 @@ namespace GestionPrestation.Migrations
 
             modelBuilder.Entity("GestionPrestation.Models.Prestation", b =>
                 {
-                    b.HasOne("GestionPrestation.Models.Prestataire", "Prestataire")
-                        .WithMany("Prestations")
-                        .HasForeignKey("IdPrestataire")
+                    b.HasOne("GestionPrestation.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("IdClient")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GestionPrestation.Models.Societe", "Societe")
+                    b.HasOne("GestionPrestation.Models.Prestataire", "Prestataire")
                         .WithMany("Prestations")
+                        .HasForeignKey("IdPrestataire");
+
+                    b.HasOne("GestionPrestation.Models.Service", "Service")
+                        .WithMany("Prestations")
+                        .HasForeignKey("IdService")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionPrestation.Models.Societe", null)
+                        .WithMany("Prestations")
+                        .HasForeignKey("SocieteId");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Prestataire");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("GestionPrestation.Models.Service", b =>
+                {
+                    b.HasOne("GestionPrestation.Models.Societe", "Societe")
+                        .WithMany("Services")
                         .HasForeignKey("IdSociete")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Prestataire");
-
                     b.Navigation("Societe");
+                });
+
+            modelBuilder.Entity("GestionPrestation.Models.Societe", b =>
+                {
+                    b.HasOne("GestionPrestation.Models.ApplicationUser", "ApplicationUser")
+                        .WithOne("Societe")
+                        .HasForeignKey("GestionPrestation.Models.Societe", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -738,6 +938,8 @@ namespace GestionPrestation.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Prestataire");
+
+                    b.Navigation("Societe");
                 });
 
             modelBuilder.Entity("GestionPrestation.Models.Client", b =>
@@ -761,9 +963,16 @@ namespace GestionPrestation.Migrations
                     b.Navigation("Paiements");
                 });
 
+            modelBuilder.Entity("GestionPrestation.Models.Service", b =>
+                {
+                    b.Navigation("Prestations");
+                });
+
             modelBuilder.Entity("GestionPrestation.Models.Societe", b =>
                 {
                     b.Navigation("Prestations");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("GestionPrestation.Models.TypeDocument", b =>

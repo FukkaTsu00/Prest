@@ -33,6 +33,10 @@ namespace GestionPrestation.Models
         [StringLength(50)]
         public string Statut { get; set; } = "Actif";
 
+        // Description for the contract
+        [StringLength(500)]
+        public string? Description { get; set; }
+
         [ForeignKey("IdClient")]
         public Client? Client { get; set; }
 

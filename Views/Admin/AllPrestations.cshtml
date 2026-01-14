@@ -1,0 +1,122 @@
+@model List<GestionPrestation.Models.Prestation>
+@{
+    ViewData["Title"] = "All Prestations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="bi bi-list-ul me-2"></i>All Prestations</h1>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0">All System Prestations</h5>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search prestations...">
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="prestationsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Service</th>
+                                <th>Client</th>
+                                <th>Prestataire</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prestation in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@prestation.Id</strong></td>
+                                    <td>@prestation.Service?.Nom</td>
+                                    <td>@prestation.Client?.Nom @prestation.Client?.Prenom</td>
+                                    <td>
+                                        @if (prestation.Prestataire != null)
+                                        {
+                                            <span>@prestation.Prestataire.Nom @prestation.Prestataire.Prenom</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not assigned</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetStatusBadgeClass(prestation.Statut)">@prestation.Statut</span>
+                                    </td>
+                                    <td>@prestation.PrixFinal.ToString("C")</td>
+                                    <td>@prestation.DateCreation.ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No prestations found</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchInput')?.addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const table = document.getElementById('prestationsTable');
+        if (!table) return;
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        }
+    });
+</script>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Planifiée" => "bg-secondary",
+            "Assignée" => "bg-info",
+            "En cours" => "bg-primary",
+            "Terminée" => "bg-success",
+            "Validée" => "bg-success",
+            "Annulée" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+
+
+
+
+

@@ -1,0 +1,93 @@
+@model GestionPrestation.Models.Prestataire
+@{
+    ViewData["Title"] = "Register Prestataire";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="bi bi-person-plus me-2"></i>Register New Prestataire</h1>
+        <a asp-action="Prestataires" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Prestataires
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Important:</strong> After registration, this prestataire will need to be approved by an Admin before they can be assigned to prestations.
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-plus me-2"></i>Prestataire Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="RegisterPrestataire" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Nom" class="form-label fw-bold">Last Name <span class="text-danger">*</span></label>
+                                <input asp-for="Nom" class="form-control" required />
+                                <span asp-validation-for="Nom" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Prenom" class="form-label fw-bold">First Name <span class="text-danger">*</span></label>
+                                <input asp-for="Prenom" class="form-control" required />
+                                <span asp-validation-for="Prenom" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Telephone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+                            <input asp-for="Telephone" class="form-control" required />
+                            <span asp-validation-for="Telephone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Specialite" class="form-label fw-bold">Specialty <span class="text-danger">*</span></label>
+                            <input asp-for="Specialite" class="form-control" 
+                                   placeholder="e.g., Web Development, Graphic Design, Consulting" required />
+                            <span asp-validation-for="Specialite" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TarifHoraire" class="form-label fw-bold">Hourly Rate <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="TarifHoraire" type="number" step="0.01" class="form-control" required />
+                            </div>
+                            <span asp-validation-for="TarifHoraire" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check form-switch">
+                            <input asp-for="Disponible" type="checkbox" class="form-check-input" checked />
+                            <label asp-for="Disponible" class="form-check-label fw-bold">Available for Work</label>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Prestataires" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Register Prestataire
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+
+
+

@@ -1,0 +1,224 @@
+@model List<GestionPrestation.Models.Prestation>
+@{
+    ViewData["Title"] = "My History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a asp-action="Dashboard" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active">My Requests</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h2 fw-bold text-dark mb-1">Service History</h1>
+            <p class="text-muted mb-0">Manage and track all your service requests in one place.</p>
+        </div>
+        <a asp-action="CreateRequest" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i>New Service Request
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 border-primary">
+                <div class="small text-muted text-uppercase fw-bold">Active</div>
+                <div class="h4 fw-bold mb-0">@Model.Count(p => p.Statut == "En cours" || p.Statut == "Assignée")</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 border-success">
+                <div class="small text-muted text-uppercase fw-bold">Completed</div>
+                <div class="h4 fw-bold mb-0">@Model.Count(p => p.Statut == "Terminée" || p.Statut == "Validée")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-0 py-3 px-4">
+            <div class="row align-items-center g-3">
+                <div class="col-md-4">
+                    <div class="input-group input-group-merge border rounded-pill px-3 py-1">
+                        <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control bg-transparent border-0" placeholder="Search by service or ID...">
+                    </div>
+                </div>
+                <div class="col-md-8 text-md-end">
+                    <div class="btn-group btn-group-sm rounded-pill p-1 bg-light">
+                        <button class="btn btn-white rounded-pill shadow-sm filter-btn active" data-filter="all">All</button>
+                        <button class="btn btn-transparent rounded-pill filter-btn" data-filter="En cours">Ongoing</button>
+                        <button class="btn btn-transparent rounded-pill filter-btn" data-filter="Terminée">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="prestationsTable">
+                        <thead class="bg-light border-top border-bottom">
+                            <tr>
+                                <th class="ps-4 border-0 text-uppercase small fw-bold text-muted py-3">Reference</th>
+                                <th class="border-0 text-uppercase small fw-bold text-muted py-3">Service & Pro</th>
+                                <th class="border-0 text-uppercase small fw-bold text-muted py-3">Timeline</th>
+                                <th class="border-0 text-uppercase small fw-bold text-muted py-3">Total Price</th>
+                                <th class="border-0 text-uppercase small fw-bold text-muted py-3">Status</th>
+                                <th class="border-0 text-uppercase small fw-bold text-muted py-3 text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model)
+                            {
+                                <tr class="prestation-row" data-status="@p.Statut">
+                                    <td class="ps-4">
+                                        <span class="fw-bold text-dark">#@p.Id</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@p.Service?.Nom</div>
+                                        <div class="small text-muted">
+                                            @if (p.Prestataire != null)
+                                            {
+                                                <i class="bi bi-person me-1"></i> 
+                                                @p.Prestataire.Nom @p.Prestataire.Prenom
+                                            }
+                                            else
+                                            {
+                                                <span class="fst-italic">Awaiting Professional</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">Requested: <span class="fw-medium">@p.DateCreation.ToString("MMM dd, yyyy")</span></div>
+                                        @if (p.DateFin.HasValue)
+                                        {
+                                            <div class="small text-muted">Ended: @p.DateFin.Value.ToString("dd/MM/yy")</div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-primary">@p.PrixFinal.ToString("C")</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetStatusBadgeClass(p.Statut) rounded-pill px-3 py-2">
+                                            @p.Statut
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a asp-action="PrestationDetails" asp-route-id="@p.Id"
+                                               class="btn btn-sm btn-light border rounded-pill px-3 shadow-xs">
+                                                Details
+                                            </a>
+
+                                            @if (p.Statut == "Terminée" && !p.ClientRating.HasValue)
+                                            {
+                                                <a asp-action="RatePrestation" asp-route-id="@p.Id"
+                                                   class="btn btn-sm btn-warning rounded-pill px-3 fw-bold">
+                                                    Rate
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" width="120" class="opacity-25 mb-3" alt="Empty">
+                    <h5 class="fw-bold">No requests found</h5>
+                    <p class="text-muted">You haven't booked any services yet.</p>
+                    <a asp-action="CreateRequest" class="btn btn-primary rounded-pill px-4">Start your first request</a>
+                </div>
+            }
+        </div>
+        <div class="card-footer bg-white border-0 py-3 text-center">
+            <small class="text-muted">Showing <strong>@Model.Count</strong> entries</small>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-merge .form-control:focus {
+        box-shadow: none;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9ff !important;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .badge {
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.02em;
+    }
+
+    .filter-btn.active {
+        background-color: #fff !important;
+        color: #0d6efd !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Search Logic
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.prestation-row');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Quick Filters Logic
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // UI update
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'btn-white', 'shadow-sm'));
+                this.classList.add('active', 'btn-white', 'shadow-sm');
+
+                const filter = this.dataset.filter;
+                const rows = document.querySelectorAll('.prestation-row');
+
+                rows.forEach(row => {
+                    if (filter === 'all' || row.dataset.status === filter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Make row clickable
+        document.querySelectorAll('.prestation-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a') && !e.target.closest('button')) {
+                    this.querySelector('a').click();
+                }
+            });
+        });
+    </script>
+}
+
+@functions {
+    string GetStatusBadgeClass(string status) => status switch
+    {
+        "En cours" => "bg-primary-subtle text-primary border border-primary",
+        "Terminée" => "bg-success-subtle text-success border border-success",
+        "Validée" => "bg-success text-white shadow-sm",
+        "Assignée" => "bg-info-subtle text-info border border-info",
+        "Annulée" => "bg-danger-subtle text-danger border border-danger",
+        _ => "bg-secondary-subtle text-secondary"
+    };
+}

@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v9.0": {
       "GestionPrestation/1.0.0": {
         "dependencies": {
+          "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "9.0.10",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "9.0.11",
           "Microsoft.AspNetCore.Identity.UI": "9.0.11",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.11",
@@ -610,6 +611,17 @@
           "lib/net9.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll": {
             "assemblyVersion": "9.0.0.0",
             "fileVersion": "9.0.1125.52006"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/9.0.10": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.11"
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll": {
+            "assemblyVersion": "9.0.10.0",
+            "fileVersion": "9.0.1025.47517"
           }
         }
       },
@@ -2887,6 +2899,13 @@
       "sha512": "sha512-AJxCQUfNgGL6Ok5rlJ+3Zf5tisnhVr9Vd2ogpHoL7mrIOKJVKtKvQ35t7TTMGanbGgs47DClwN+uYJLhjO0jNA==",
       "path": "microsoft.aspnetcore.cryptography.keyderivation/9.0.11",
       "hashPath": "microsoft.aspnetcore.cryptography.keyderivation.9.0.11.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/9.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EJ74eEBB0Ro14+ILA71sGMsJ8nszHFV/apgYCvxZxDDtg1+wpNdmviDLjinqwHGJwZX5ALp0ctNNZNnc6tS/bQ==",
+      "path": "microsoft.aspnetcore.diagnostics.entityframeworkcore/9.0.10",
+      "hashPath": "microsoft.aspnetcore.diagnostics.entityframeworkcore.9.0.10.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore/9.0.11": {
       "type": "package",

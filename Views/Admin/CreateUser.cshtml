@@ -1,0 +1,132 @@
+﻿@model GestionPrestation.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Create User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1 fw-bold text-dark"><i class="bi bi-person-plus-fill me-2 text-primary"></i>Register Account</h1>
+            <p class="text-muted">Manually onboard a new user to the system.</p>
+        </div>
+        <a asp-action="Users" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>Back to Users
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7 mx-auto">
+            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-card-list me-2 text-primary"></i>Account Specifications</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="CreateUser" method="post" id="createUserForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label small fw-bold text-uppercase text-muted">First Name</label>
+                                <input asp-for="FirstName" class="form-control form-control-lg border-2 shadow-none" placeholder="e.g. Jean" required />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label small fw-bold text-uppercase text-muted">Last Name</label>
+                                <input asp-for="LastName" class="form-control form-control-lg border-2 shadow-none" placeholder="e.g. Dupont" required />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label small fw-bold text-uppercase text-muted">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2 border-end-0"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" type="email" class="form-control form-control-lg border-2 border-start-0 shadow-none" placeholder="name@example.com" required />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="PhoneNumber" class="form-label small fw-bold text-uppercase text-muted">Phone Number</label>
+                            <input asp-for="PhoneNumber" id="phoneInput" class="form-control form-control-lg border-2 shadow-none" placeholder="+212 600 000000" />
+                            <div id="phoneHelp" class="form-text mt-2"><i class="bi bi-info-circle me-1"></i>Crucial for automated SMS notifications.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-bold text-uppercase text-muted">Access Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2 border-end-0"><i class="bi bi-lock"></i></span>
+                                <input type="password" name="password" id="password" class="form-control form-control-lg border-2 border-start-0 shadow-none" required minlength="6" />
+                                <button class="btn btn-outline-secondary border-2 border-start-0" type="button" id="togglePassword">
+                                    <i class="bi bi-eye" id="passwordIcon"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Security Requirement: At least 6 characters.</div>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-light rounded-3">
+                            <label for="role" class="form-label small fw-bold text-uppercase text-muted">System Authority</label>
+                            <select name="role" id="roleSelect" class="form-select form-select-lg border-2 shadow-none" required>
+                                <option value="" disabled selected>Assign a permission level...</option>
+                                <option value="Admin">🛡️ Administrator</option>
+                                <option value="Client">👤 Standard Client</option>
+                                <option value="Prestataire">🛠️ Prestataire (Service Provider)</option>
+                                <option value="Societe">🏢 Business / Societe</option>
+                            </select>
+                            <div id="roleAlert" class="mt-2 small text-warning d-none">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Requires manual approval before login.
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Users" class="btn btn-light btn-lg rounded-pill px-4 me-md-2 text-muted fw-bold">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                                <i class="bi bi-person-check-fill me-2"></i>Finalize Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Password Visibility Toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const icon = document.getElementById('passwordIcon');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+
+        // Role Logic UI
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            const role = this.value;
+            const alert = document.getElementById('roleAlert');
+            const phoneInput = document.getElementById('phoneInput');
+
+            // Show alert for approval-based roles
+            if (role === 'Prestataire' || role === 'Societe') {
+                alert.classList.remove('d-none');
+                phoneInput.classList.add('border-warning');
+            } else {
+                alert.classList.add('d-none');
+                phoneInput.classList.remove('border-warning');
+            }
+        });
+    </script>
+}

@@ -1,0 +1,254 @@
+@model GestionPrestation.Models.ViewModels.PrestataireDashboardViewModel
+@{
+    ViewData["Title"] = "Professional Hub";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4 bg-light-subtle">
+    <div class="row align-items-center mb-5 g-3">
+        <div class="col-md-7">
+            <h1 class="h3 fw-bold text-dark mb-1">Welcome back, @Model.Prestataire.Prenom! 👋</h1>
+            <p class="text-muted mb-0">Here's what's happening with your services today.</p>
+        </div>
+        <div class="col-md-5 text-md-end">
+            <div class="d-inline-flex align-items-center bg-white border rounded-pill px-4 py-2 shadow-sm">
+                <span class="small fw-bold me-3">Work Status:</span>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="availabilitySwitch"
+                           @(Model.Prestataire.Disponible ? "checked" : "") style="width: 2.5em; height: 1.25em;">
+                    <label class="form-check-label small fw-bold @(Model.Prestataire.Disponible ? "text-success" : "text-muted")" for="availabilitySwitch">
+                        @(Model.Prestataire.Disponible ? "Available for New Jobs" : "Offline")
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-xl-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden rounded-4 bg-dark text-white">
+                <div class="card-body p-4 position-relative">
+                    <div class="position-relative z-1">
+                        <h6 class="text-white-50 text-uppercase fw-bold small tracking-wider mb-3">Total Earnings</h6>
+                        <h2 class="display-5 fw-bold mb-3">@Model.TotalRevenue.ToString("C")</h2>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-pill px-2 py-1 small">
+                                <i class="bi bi-graph-up-arrow me-1"></i> Paid Invoices
+                            </span>
+                        </div>
+                    </div>
+                    <div class="position-absolute bg-primary rounded-circle opacity-10" style="width: 200px; height: 200px; top: -50px; right: -50px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-md-6">
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3">
+                        <div class="stat-icon-sm bg-primary-subtle text-primary mx-auto mb-2">
+                            <i class="bi bi-lightning-fill"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">@Model.ActivePrestations.Count</h4>
+                        <p class="text-muted small mb-0">Active Jobs</p>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3">
+                        <div class="stat-icon-sm bg-success-subtle text-success mx-auto mb-2">
+                            <i class="bi bi-check-all"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">@Model.CompletedServices</h4>
+                        <p class="text-muted small mb-0">Completed</p>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 border-bottom border-4 border-warning">
+                        <div class="stat-icon-sm bg-warning-subtle text-warning mx-auto mb-2">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">@Model.PendingServices</h4>
+                        <p class="text-muted small mb-0">Open Leads</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1">Upcoming Schedule</h5>
+                        <p class="text-muted small mb-0">Your next priority services</p>
+                    </div>
+                    <a asp-action="MyPrestations" class="btn btn-light btn-sm rounded-pill px-3 border">View Full List</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead class="bg-light-subtle text-muted small text-uppercase fw-bold">
+                                <tr>
+                                    <th class="ps-4 border-0">Client</th>
+                                    <th class="border-0">Service Type</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0 text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.ActivePrestations.Take(5))
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 text-dark fw-bold">
+                                                    @p.Client?.Prenom.Substring(0, 1)
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark">@p.Client?.Nom @p.Client?.Prenom</div>
+                                                    <div class="small text-muted">Ref: #@p.Id</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold">@p.Service?.Nom</span>
+                                            <div class="progress mt-1" style="height: 4px; width: 80px;">
+                                                <div class="progress-bar" style="width: @GetProgress(p.Statut)%"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetStatusBadgeClass(p.Statut) rounded-pill px-3 py-2">@p.Statut</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a asp-action="PrestationDetails" asp-route-id="@p.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                Manage
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-4 px-4">
+                    <h5 class="fw-bold mb-0">Recent Billing</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @foreach (var f in Model.RecentFactures.Take(4))
+                        {
+                            <div class="list-group-item border-0 px-4 py-3 d-flex align-items-center">
+                                <div class="bg-light rounded-3 p-2 me-3">
+                                    <i class="bi bi-receipt text-muted fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-bold text-dark">@f.NumeroFacture</span>
+                                        <span class="fw-bold text-primary">@f.MontantTTC.ToString("C")</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted">@f.DateEmission.ToString("dd MMM yyyy")</span>
+                                        <span class="badge @GetInvoiceStatusBadge(f.Statut) rounded-pill small" style="font-size: 0.65rem;">@f.Statut</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 text-center py-3">
+                    <a href="#" class="btn btn-link btn-sm text-decoration-none fw-bold">Download All Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-subtle {
+        background-color: #f8fafc !important;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .stat-icon-sm {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .avatar-sm {
+        width: 38px;
+        height: 38px;
+        font-size: 0.85rem;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #0d6efd 0%, #0dcaf0 100%);
+    }
+
+    /* Custom Switch Color */
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+</style>
+
+@functions {
+    string GetStatusBadgeClass(string status) => status switch
+    {
+        "En cours" => "bg-primary-subtle text-primary border border-primary",
+        "Terminée" => "bg-success-subtle text-success border border-success",
+        "Validée" => "bg-success text-white shadow-sm",
+        "Assignée" => "bg-info-subtle text-info border border-info",
+        _ => "bg-secondary-subtle text-secondary"
+    };
+
+    int GetProgress(string status) => status switch
+    {
+        "Assignée" => 25,
+        "En cours" => 60,
+        "Terminée" => 100,
+        _ => 10
+    };
+
+    string GetInvoiceStatusBadge(string status) => status switch
+    {
+        "Payée" => "bg-success-subtle text-success",
+        "En attente" => "bg-warning-subtle text-warning",
+        "Retard" => "bg-danger-subtle text-danger",
+        _ => "bg-secondary-subtle text-secondary"
+    };
+}
+
+@section Scripts {
+    <script>
+        // Placeholder for real AJAX call to toggle availability
+        document.getElementById('availabilitySwitch').addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if(this.checked) {
+                label.innerText = "Available for New Jobs";
+                label.classList.replace('text-muted', 'text-success');
+            } else {
+                label.innerText = "Offline";
+                label.classList.replace('text-success', 'text-muted');
+            }
+            // Add fetch() call here to update database via Controller
+        });
+    </script>
+}

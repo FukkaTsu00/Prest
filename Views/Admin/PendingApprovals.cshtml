@@ -1,0 +1,218 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Pending Approvals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var companies = ViewBag.Companies as List<GestionPrestation.Models.Societe> ?? new List<GestionPrestation.Models.Societe>();
+    var prestataires = ViewBag.Prestataires as List<GestionPrestation.Models.Prestataire> ?? new List<GestionPrestation.Models.Prestataire>();
+}
+
+<style>
+    .approval-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 12px;
+    }
+
+        .approval-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+        }
+
+    .table thead th {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #64748b;
+        background-color: #f8fafc;
+    }
+
+    .badge-pending {
+        background-color: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fef3c7;
+    }
+
+    .btn-approve {
+        background-color: #10b981;
+        border: none;
+        transition: all 0.2s;
+    }
+
+        .btn-approve:hover {
+            background-color: #059669;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+        }
+</style>
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1 fw-bold text-dark"><i class="bi bi-shield-check me-2 text-primary"></i>Approvals Portal</h1>
+            <p class="text-muted">Review and authorize new system entities.</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+
+    <div class="card approval-card border-0 shadow-sm mb-5">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-building me-2 text-primary"></i>Companies</h5>
+            <span class="badge rounded-pill bg-primary">@companies.Count Total</span>
+        </div>
+        <div class="card-body p-0">
+            @if (companies.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Company Name</th>
+                                <th>Contact & Address</th>
+                                <th>Registration</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var company in companies)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">@company.Nom</div>
+                                        <div class="small text-muted">@company.Email</div>
+                                    </td>
+                                    <td>
+                                        <div class="small">@company.Adresse</div>
+                                    </td>
+                                    <td><code class="text-primary fw-bold">@company.NumeroStringCommerce</code></td>
+                                    <td>
+                                        @if (company.IsApproved)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3">Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-pending px-3">Pending</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        @if (!company.IsApproved)
+                                        {
+                                            <div class="btn-group shadow-sm rounded">
+                                                <form asp-action="ApproveCompany" asp-route-id="@company.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-approve text-white">
+                                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                                    </button>
+                                                </form>
+                                                <form asp-action="RejectCompany" asp-route-id="@company.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-start-0"
+                                                            onclick="return confirm('Reject this company?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="text-muted small italic">Processed</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="display-6 text-muted mb-2"><i class="bi bi-inbox"></i></div>
+                    <p class="text-muted">No companies awaiting review.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card approval-card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-person-badge me-2 text-primary"></i>Individual Prestataires</h5>
+            <span class="badge rounded-pill bg-primary">@prestataires.Count Total</span>
+        </div>
+        <div class="card-body p-0">
+            @if (prestataires.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Full Name</th>
+                                <th>Specialty</th>
+                                <th>Hourly Rate</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prestataire in prestataires)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">@prestataire.Nom @prestataire.Prenom</div>
+                                        <div class="small text-muted">@prestataire.Telephone</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">@prestataire.Specialite</span></td>
+                                    <td><span class="fw-bold">@prestataire.TarifHoraire.ToString("C")</span></td>
+                                    <td>
+                                        @if (prestataire.IsApproved)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3">Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-pending px-3">Pending</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        @if (!prestataire.IsApproved)
+                                        {
+                                            <div class="btn-group shadow-sm rounded">
+                                                <form asp-action="ApprovePrestataire" asp-route-id="@prestataire.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-approve text-white">
+                                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                                    </button>
+                                                </form>
+                                                <form asp-action="RejectPrestataire" asp-route-id="@prestataire.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-start-0"
+                                                            onclick="return confirm('Reject this prestataire?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="text-muted small">Processed</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="display-6 text-muted mb-2"><i class="bi bi-person-check"></i></div>
+                    <p class="text-muted">No individual applications pending.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
